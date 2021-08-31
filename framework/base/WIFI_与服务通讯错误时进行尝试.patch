@@ -1,0 +1,52 @@
+Index: services/core/java/com/android/server/NativeDaemonConnector.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- services/core/java/com/android/server/NativeDaemonConnector.java	(date 1630121887000)
++++ services/core/java/com/android/server/NativeDaemonConnector.java	(date 1630121903000)
+@@ -408,7 +408,7 @@
+ 
+     public NativeDaemonEvent execute(long timeoutMs, String cmd, Object... args)
+             throws NativeDaemonConnectorException {
+-        final NativeDaemonEvent[] events = executeForList(timeoutMs, cmd, args);
++        final NativeDaemonEvent[] events = executeForList(timeoutMs, cmd, 0, args);
+         if (events.length != 1) {
+             throw new NativeDaemonConnectorException(
+                     "Expected exactly one response, but received " + events.length);
+@@ -443,7 +443,7 @@
+      */
+     public NativeDaemonEvent[] executeForList(String cmd, Object... args)
+             throws NativeDaemonConnectorException {
+-        return executeForList(DEFAULT_TIMEOUT, cmd, args);
++        return executeForList(DEFAULT_TIMEOUT, cmd,0, args);
+     }
+ 
+     /**
+@@ -458,7 +458,7 @@
+      *             {@link NativeDaemonEvent#isClassClientError()} or
+      *             {@link NativeDaemonEvent#isClassServerError()}.
+      */
+-    public NativeDaemonEvent[] executeForList(long timeoutMs, String cmd, Object... args)
++    public NativeDaemonEvent[] executeForList(long timeoutMs, String cmd, int loop_count,Object... args)
+             throws NativeDaemonConnectorException {
+         if (mWarnIfHeld != null && Thread.holdsLock(mWarnIfHeld)) {
+             Slog.wtf(TAG, "Calling thread " + Thread.currentThread().getName() + " is holding 0x"
+@@ -512,7 +512,16 @@
+             throw new NativeDaemonArgumentException(logCmd, event);
+         }
+         if (event.isClassServerError()) {
+-            throw new NativeDaemonFailureException(logCmd, event);
++            if (loop_count == 2) {
++                throw new NativeDaemonFailureException(logCmd, event);
++            }
++            try{
++                loge("event.isClassServerError() 重试 "+loop_count);
++                Thread.sleep(2000);
++            } catch(Exception e) {
++                e.printStackTrace();
++            }
++            return executeForList(timeoutMs, cmd, ++loop_count, args);
+         }
+ 
+         return events.toArray(new NativeDaemonEvent[events.size()]);
