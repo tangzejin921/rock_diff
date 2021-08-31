@@ -1,0 +1,52 @@
+Index: service/java/com/android/server/wifi/WifiApConfigStore.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/java/com/android/server/wifi/WifiApConfigStore.java	(date 1573523846000)
++++ service/java/com/android/server/wifi/WifiApConfigStore.java	(date 1630122479000)
+@@ -329,11 +329,16 @@
+         WifiConfiguration config = new WifiConfiguration();
+         config.apBand = WifiConfiguration.AP_BAND_2GHZ;
+         config.SSID = mContext.getResources().getString(
+-                R.string.wifi_tether_configure_ssid_default) + "_" + getRandomIntForDefaultSsid();
++                R.string.wifi_tether_configure_ssid_default)/* + "_" + getRandomIntForDefaultSsid()*/;
+         config.allowedKeyManagement.set(KeyMgmt.WPA2_PSK);
+-        String randomUUID = UUID.randomUUID().toString();
+-        //first 12 chars from xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+-        config.preSharedKey = randomUUID.substring(0, 8) + randomUUID.substring(9, 13);
++        String pwd = mContext.getResources().getString(R.string.wifi_tether_configure_pwd_default);
++        if (TextUtils.isEmpty(pwd)){
++            String randomUUID = UUID.randomUUID().toString();
++            //first 12 chars from xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
++            config.preSharedKey = randomUUID.substring(0, 8) + randomUUID.substring(9, 13);
++        }else{
++            config.preSharedKey = pwd;
++        }
+         return config;
+     }
+ 
+@@ -351,13 +356,18 @@
+         // For local only hotspot we only use 2.4Ghz band.
+         config.apBand = WifiConfiguration.AP_BAND_2GHZ;
+         config.SSID = context.getResources().getString(
+-              R.string.wifi_localhotspot_configure_ssid_default) + "_"
+-                      + getRandomIntForDefaultSsid();
++              R.string.wifi_localhotspot_configure_ssid_default)/* + "_"
++                      + getRandomIntForDefaultSsid()*/;
+         config.allowedKeyManagement.set(KeyMgmt.WPA2_PSK);
+         config.networkId = WifiConfiguration.LOCAL_ONLY_NETWORK_ID;
+-        String randomUUID = UUID.randomUUID().toString();
+-        // first 12 chars from xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+-        config.preSharedKey = randomUUID.substring(0, 8) + randomUUID.substring(9, 13);
++        String pwd = context.getResources().getString(R.string.wifi_tether_configure_pwd_default);
++        if (TextUtils.isEmpty(pwd)){
++            String randomUUID = UUID.randomUUID().toString();
++            //first 12 chars from xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
++            config.preSharedKey = randomUUID.substring(0, 8) + randomUUID.substring(9, 13);
++        }else{
++            config.preSharedKey = pwd;
++        }
+         return config;
+     }
+ 

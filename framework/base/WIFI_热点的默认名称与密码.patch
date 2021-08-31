@@ -1,0 +1,46 @@
+Index: config/hiddenapi-private-dex.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- config/hiddenapi-private-dex.txt	(date 1630121903000)
++++ config/hiddenapi-private-dex.txt	(date 1630121919000)
+@@ -116287,6 +116287,7 @@
+ Lcom/android/internal/R$string;->wifi_p2p_to_message:I
+ Lcom/android/internal/R$string;->wifi_p2p_turnon_message:I
+ Lcom/android/internal/R$string;->wifi_tether_configure_ssid_default:I
++Lcom/android/internal/R$string;->wifi_tether_configure_pwd_default:I
+ Lcom/android/internal/R$string;->wifi_wakeup_enabled_content:I
+ Lcom/android/internal/R$string;->wifi_wakeup_enabled_title:I
+ Lcom/android/internal/R$string;->wifi_wakeup_onboarding_action_disable:I
+Index: core/res/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- core/res/res/values/strings.xml	(date 1630121903000)
++++ core/res/res/values/strings.xml	(date 1630121919000)
+@@ -3212,6 +3212,8 @@
+ 
+     <!-- Do not translate. Default access point SSID used for tethering -->
+     <string name="wifi_tether_configure_ssid_default" translatable="false">AndroidAP</string>
++    <!--热点的默认密码,为空时为随机密码-->
++    <string name="wifi_tether_configure_pwd_default" translatable="false">12345678</string>
+     <!-- Do not translate. Default access point SSID used for local only hotspot -->
+     <string name="wifi_localhotspot_configure_ssid_default" translatable="false">AndroidShare</string>
+ 
+Index: core/res/res/values/symbols.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- core/res/res/values/symbols.xml	(date 1630121903000)
++++ core/res/res/values/symbols.xml	(date 1630121919000)
+@@ -1081,6 +1081,7 @@
+   <java-symbol type="string" name="wifi_p2p_turnon_message" />
+   <java-symbol type="string" name="wifi_p2p_frequency_conflict_message" />
+   <java-symbol type="string" name="wifi_tether_configure_ssid_default" />
++  <java-symbol type="string" name="wifi_tether_configure_pwd_default" />
+   <java-symbol type="string" name="wifi_localhotspot_configure_ssid_default" />
+   <java-symbol type="string" name="wifi_watchdog_network_disabled" />
+   <java-symbol type="string" name="wifi_watchdog_network_disabled_detailed" />
