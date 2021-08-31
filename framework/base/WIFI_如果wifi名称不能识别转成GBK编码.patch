@@ -1,0 +1,36 @@
+Index: wifi/java/android/net/wifi/WifiSsid.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- wifi/java/android/net/wifi/WifiSsid.java	(date 1598414603000)
++++ wifi/java/android/net/wifi/WifiSsid.java	(date 1630121887000)
+@@ -185,6 +185,28 @@
+         CoderResult result = decoder.decode(ByteBuffer.wrap(ssidBytes), out, true);
+         out.flip();
+         if (result.isError()) {
++            return toGBK(ssidBytes);
++        }
++        String temp = out.toString();
++        if (temp.contains("ï¿½") || temp.contains("�")){
++            temp = toGBK(ssidBytes);
++        }
++        return temp;
++    }
++
++    /**
++     * GBK编码
++     */
++    private String toGBK(byte[] bts){
++        Charset charset = Charset.forName("GBK");
++        CharsetDecoder decoder = charset.newDecoder()
++                .onMalformedInput(CodingErrorAction.REPLACE)
++                .onUnmappableCharacter(CodingErrorAction.REPLACE);
++        CharBuffer out = CharBuffer.allocate(32);
++
++        CoderResult result = decoder.decode(ByteBuffer.wrap(bts), out, true);
++        out.flip();
++        if (result.isError()) {
+             return NONE;
+         }
+         return out.toString();
