@@ -1,0 +1,140 @@
+Index: service/java/com/android/server/wifi/WifiBackupDataV1Parser.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/java/com/android/server/wifi/WifiBackupDataV1Parser.java	(date 1630122479000)
++++ service/java/com/android/server/wifi/WifiBackupDataV1Parser.java	(date 1630122508000)
+@@ -297,7 +297,16 @@
+                     configuration.BSSID = (String) value;
+                     break;
+                 case WifiConfigurationXmlUtil.XML_TAG_PRE_SHARED_KEY:
+-                    configuration.preSharedKey = (String) value;
++                    String pwd = (String) value;
++                    try {
++                        if (pwd != null && pwd.startsWith("\t")){
++                            pwd = pwd.replace("\t", "");
++                            pwd = com.android.server.wifi.util.StringUtil.decrypt(pwd, "DES");
++                        }
++                    }catch (Exception e){
++                        e.printStackTrace();
++                    }
++                    configuration.preSharedKey = pwd;
+                     break;
+                 case WifiConfigurationXmlUtil.XML_TAG_WEP_KEYS:
+                     populateWepKeysFromXmlValue(value, configuration.wepKeys);
+Index: service/java/com/android/server/wifi/util/StringUtil.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/java/com/android/server/wifi/util/StringUtil.java	(date 1630122479000)
++++ service/java/com/android/server/wifi/util/StringUtil.java	(date 1630122508000)
+@@ -16,6 +16,12 @@
+ 
+ package com.android.server.wifi.util;
+ 
++import java.security.Key;
++
++import javax.crypto.Cipher;
++import javax.crypto.SecretKeyFactory;
++import javax.crypto.spec.DESKeySpec;
++
+ /** Basic string utilities */
+ public class StringUtil {
+     static final byte ASCII_PRINTABLE_MIN = ' ';
+@@ -45,4 +51,51 @@
+ 
+         return true;
+     }
++
++    private static Key getDESKey() throws Exception {
++        DESKeySpec des = new DESKeySpec("this_is_Android9".getBytes());
++        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
++        return keyFactory.generateSecret(des);
++    }
++
++    public static String encrypt(String data, String algorithm) throws Exception {
++        return encrypt(data, getDESKey(), algorithm);
++    }
++
++    private static String encrypt(String data, Key key, String algorithm) throws Exception {
++        Cipher cipher = Cipher.getInstance(algorithm);
++        cipher.init(Cipher.ENCRYPT_MODE, key);
++        return toHexString(cipher.doFinal(data.getBytes("utf-8")));
++    }
++
++    public static String decrypt(String data, String algorithm) throws Exception {
++        return decrypt(data, getDESKey(), algorithm);
++    }
++
++    private static String decrypt(String data, Key key, String algorithm) throws Exception {
++        Cipher cipher = Cipher.getInstance(algorithm);
++        cipher.init(Cipher.DECRYPT_MODE, key);
++        return new String(cipher.doFinal(toHexBytes(data)), "utf-8");
++    }
++
++    private static String toHexString(byte[] data) {
++        char[] hexDigits = "0123456789abcdef".toCharArray();
++        StringBuilder sb = new StringBuilder(2 * data.length);
++        for (byte b : data) {
++            sb.append(hexDigits[(b >> 4 & 0xF)]).append(hexDigits[(b & 0xF)]);
++        }
++        return sb.toString();
++    }
++
++    private static byte[] toHexBytes(String s) {
++        if (s == null) {
++            return new byte[0];
++        }
++        int len = s.length();
++        byte[] d = new byte[len / 2];
++        for (int i = 0; i < len; i += 2) {
++            d[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
++        }
++        return d;
++    }
+ }
+Index: service/java/com/android/server/wifi/util/XmlUtil.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/java/com/android/server/wifi/util/XmlUtil.java	(date 1630122479000)
++++ service/java/com/android/server/wifi/util/XmlUtil.java	(date 1630122508000)
+@@ -386,7 +386,16 @@
+             XmlUtil.writeNextValue(out, XML_TAG_CONFIG_KEY, configuration.configKey());
+             XmlUtil.writeNextValue(out, XML_TAG_SSID, configuration.SSID);
+             XmlUtil.writeNextValue(out, XML_TAG_BSSID, configuration.BSSID);
+-            XmlUtil.writeNextValue(out, XML_TAG_PRE_SHARED_KEY, configuration.preSharedKey);
++            String pwd = configuration.preSharedKey;
++            try {
++                if (pwd != null && !pwd.startsWith("\t")){
++                    pwd = StringUtil.encrypt(pwd, "DES");
++                    pwd = "\t" + pwd;
++                }
++            }catch (Exception e){
++                e.printStackTrace();
++            }
++            XmlUtil.writeNextValue(out, XML_TAG_PRE_SHARED_KEY, pwd);
+             writeWepKeysToXml(out, configuration.wepKeys);
+             XmlUtil.writeNextValue(out, XML_TAG_WEP_TX_KEY_INDEX, configuration.wepTxKeyIndex);
+             XmlUtil.writeNextValue(out, XML_TAG_HIDDEN_SSID, configuration.hiddenSSID);
+@@ -526,7 +535,16 @@
+                         configuration.BSSID = (String) value;
+                         break;
+                     case XML_TAG_PRE_SHARED_KEY:
+-                        configuration.preSharedKey = (String) value;
++                        String pwd = (String) value;
++                        try {
++                            if (pwd != null && pwd.startsWith("\t")){
++                                pwd = pwd.replace("\t","");
++                                pwd = StringUtil.decrypt(pwd, "DES");
++                            }
++                        }catch (Exception e){
++                            e.printStackTrace();
++                        }
++                        configuration.preSharedKey = pwd;
+                         break;
+                     case XML_TAG_WEP_KEYS:
+                         populateWepKeysFromXmlValue(value, configuration.wepKeys);
