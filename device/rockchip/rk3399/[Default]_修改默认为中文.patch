@@ -1,0 +1,15 @@
+Index: rk3399.mk
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- rk3399.mk	(revision c4602a9efc696a19bc8b6c7b35166bebe998e7f7)
++++ rk3399.mk	(revision 20f5a9eb787ee39f5785f4d236a43fbeebfb318b)
+@@ -47,3 +47,6 @@
+ 
+ BOARD_SHOW_HDMI_SETTING := true
+ #PRODUCT_HAVE_OPTEE := true
++
++# 设置为中文
++PRODUCT_LOCALES := zh_CN
+\ No newline at end of file
