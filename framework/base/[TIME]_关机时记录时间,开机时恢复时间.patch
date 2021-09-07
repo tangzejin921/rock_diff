@@ -1,0 +1,69 @@
+Index: services/core/java/com/android/server/AlarmManagerService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- services/core/java/com/android/server/AlarmManagerService.java	(revision 0a0143aec57922bf6ab97aab38bdd682075d0dbf)
++++ services/core/java/com/android/server/AlarmManagerService.java	(revision 71b5003574420bfc51f20a6e1a1ee83109a7b927)
+@@ -1293,9 +1293,11 @@
+             // Ensure that we're booting with a halfway sensible current time.  Use the
+             // most recent of Build.TIME, the root file system's timestamp, and the
+             // value of the ro.build.date.utc system property (which is in seconds).
+-            final long systemBuildTime =  Long.max(
++            long systemBuildTime =  Long.max(
+                     1000L * SystemProperties.getLong("ro.build.date.utc", -1L),
+                     Long.max(Environment.getRootDirectory().lastModified(), Build.TIME));
++            systemBuildTime = Settings.System.getLong(getContext().getContentResolver(),"last_modified_time",systemBuildTime);
++            Log.d(TAG, "Current time only " + System.currentTimeMillis() + ", advancing to time " + systemBuildTime);
+             if (System.currentTimeMillis() < systemBuildTime) {
+                 Slog.i(TAG, "Current time only " + System.currentTimeMillis()
+                         + ", advancing to build time " + systemBuildTime);
+@@ -1393,6 +1395,16 @@
+         }
+ 
+         synchronized (mLock) {
++            try {
++                Settings.System.putLong(
++                        getContext().getContentResolver(),
++                        "last_modified_time",
++                        java.lang.System.currentTimeMillis()
++                );
++                Log.d(TAG, "set time to last_modified_time = "+java.lang.System.currentTimeMillis());
++            }catch (Exception e){
++                e.printStackTrace();
++            }
+             return setKernelTime(mNativeData, millis) == 0;
+         }
+     }
+Index: services/core/java/com/android/server/power/ShutdownThread.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- services/core/java/com/android/server/power/ShutdownThread.java	(revision 0a0143aec57922bf6ab97aab38bdd682075d0dbf)
++++ services/core/java/com/android/server/power/ShutdownThread.java	(revision 71b5003574420bfc51f20a6e1a1ee83109a7b927)
+@@ -41,6 +41,7 @@
+ import android.os.UserHandle;
+ import android.os.UserManager;
+ import android.os.Vibrator;
++import android.provider.Settings;
+ import android.util.ArrayMap;
+ import android.util.Log;
+ import android.util.TimingsTraceLog;
+@@ -720,6 +721,16 @@
+      * @param reason reason for reboot/shutdown
+      */
+     public static void rebootOrShutdown(final Context context, boolean reboot, String reason) {
++        try {
++            Settings.System.putLong(
++                    context.getContentResolver(),
++                    "last_modified_time",
++                    java.lang.System.currentTimeMillis()
++            );
++            Log.d(TAG, "save time to last_modified_time = "+java.lang.System.currentTimeMillis());
++        }catch (Exception e){
++            e.printStackTrace();
++        }
+         if (reboot) {
+             Log.i(TAG, "Rebooting, reason: " + reason);
+             PowerManagerService.lowLevelReboot(reason);
