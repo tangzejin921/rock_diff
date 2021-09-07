@@ -1,0 +1,18 @@
+Index: services/java/com/android/server/SystemServer.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- services/java/com/android/server/SystemServer.java	(revision 245c4789cb239e85d1cf6b2c91df9b357f1bbc06)
++++ services/java/com/android/server/SystemServer.java	(revision 1a8b659fa0d7bb38c9effd405c64a7a2925607b1)
+@@ -323,8 +323,8 @@
+             //
+             String timezoneProperty =  SystemProperties.get("persist.sys.timezone");
+             if (timezoneProperty == null || timezoneProperty.isEmpty()) {
+-                Slog.w(TAG, "Timezone not set; setting to GMT.");
+-                SystemProperties.set("persist.sys.timezone", "GMT");
++                Slog.w(TAG, "Timezone not set; setting to Asia/Shanghai.");
++                SystemProperties.set("persist.sys.timezone", "Asia/Shanghai");
+             }
+ 
+             // If the system has "persist.sys.language" and friends set, replace them with

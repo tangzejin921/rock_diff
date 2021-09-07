@@ -1,0 +1,31 @@
+Index: overlay/frameworks/base/core/res/res/values/config.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- overlay/frameworks/base/core/res/res/values/config.xml	(revision bd506519e59004170d397587f64bd43dff8e65c4)
++++ overlay/frameworks/base/core/res/res/values/config.xml	(revision c5a721b581d96507bf58120b8d7cef48cc187d69)
+@@ -178,4 +178,7 @@
+     <!-- Whether or not swipe up gesture's opt-in setting is available on this device -->
+     <bool name="config_swipe_up_gesture_setting_available">false</bool>
+ 
++    <!--网络同步时间的地址-->
++    <string translatable="false" name="config_ntpServer">cn.pool.ntp.org</string>
++
+ </resources>
+Index: system.prop
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- system.prop	(revision bd506519e59004170d397587f64bd43dff8e65c4)
++++ system.prop	(revision c5a721b581d96507bf58120b8d7cef48cc187d69)
+@@ -36,7 +36,7 @@
+ ro.tether.denied=false
+ sys.resolution.changed=false
+ ro.default.size=100
+-persist.sys.timezone=
++persist.sys.timezone=Asia/Shanghai
+ ro.product.usbfactory=rockchip_usb
+ wifi.supplicant_scan_interval=15
+ ro.factory.tool=0
