@@ -1,0 +1,75 @@
+Index: core/java/android/util/NtpTrustedTime.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- core/java/android/util/NtpTrustedTime.java	(revision 1a8b659fa0d7bb38c9effd405c64a7a2925607b1)
++++ core/java/android/util/NtpTrustedTime.java	(revision 0a0143aec57922bf6ab97aab38bdd682075d0dbf)
+@@ -27,6 +27,8 @@
+ import android.provider.Settings;
+ import android.text.TextUtils;
+ 
++import android.location.Location;
++import android.location.LocationManager;
+ /**
+  * {@link TrustedTime} that connects with a remote NTP server as its trusted
+  * time source.
+@@ -50,6 +52,7 @@
+     private long mCachedNtpElapsedRealtime;
+     private long mCachedNtpCertainty;
+ 
++    private Location mLocation;
+     private NtpTrustedTime(String server, long timeout) {
+         if (LOGD) Log.d(TAG, "creating NtpTrustedTime using " + server);
+         mServer = server;
+@@ -89,7 +92,11 @@
+         }
+ 
+         final Network network = mCM == null ? null : mCM.getActiveNetwork();
+-        return forceRefresh(network);
++        boolean ret = forceRefresh(network);
++        if (!ret){
++            ret = getGps();
++        }
++        return ret;
+     }
+ 
+     public boolean forceRefresh(Network network) {
+@@ -125,6 +132,25 @@
+         }
+     }
+ 
++    private boolean getGps() {
++        LocationManager mLocManager = (LocationManager) sContext.getSystemService(Context.LOCATION_SERVICE);
++        Location location = mLocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
++        if (location != null && location.getTime() > 1000) {
++            mLocation = location;
++            mCachedNtpTime = mLocation.getTime();
++            mCachedNtpElapsedRealtime = mLocation.getElapsedRealtimeNanos() / 1000000l;
++            Log.d(TAG, "getLastKnownLocation = " + mLocation);
++            return true;
++        } else {
++            Log.d(TAG, "getLastKnownLocation fail " + mLocation);
++        }
++        return false;
++    }
++
++    public boolean isLocation(){
++        return mLocation != null;
++    }
++
+     @Override
+     public boolean hasCache() {
+         return mHasCache;
+@@ -151,6 +177,11 @@
+     @Override
+     public long currentTimeMillis() {
+         if (!mHasCache) {
++            if (mLocation != null) {
++                long time = mLocation.getTime() + (SystemClock.elapsedRealtimeNanos() - mLocation.getElapsedRealtimeNanos()) / 1000000l;
++                Log.d(TAG, "get location time is " + time);
++                return time;
++            }
+             throw new IllegalStateException("Missing authoritative time source");
+         }
+         if (LOGD) Log.d(TAG, "currentTimeMillis() cache hit");
