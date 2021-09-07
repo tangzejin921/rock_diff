@@ -1,0 +1,17 @@
+Index: overlay/frameworks/base/packages/SettingsProvider/res/values/defaults.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- overlay/frameworks/base/packages/SettingsProvider/res/values/defaults.xml	(revision c5a721b581d96507bf58120b8d7cef48cc187d69)
++++ overlay/frameworks/base/packages/SettingsProvider/res/values/defaults.xml	(revision b64418c270db379a69db046164e098aa9be003cb)
+@@ -19,5 +19,8 @@
+ <resources>
+     <!-- Default screen brightness, translate to 85 in kernel -->
+     <integer name="def_screen_brightness">120</integer>
+-    <bool name="def_bluetooth_on">false</bool>
++    <!-- 蓝牙默认为开 -->
++    <bool name="def_bluetooth_on">true</bool>
++    <!-- wifi默认为开 -->
++    <bool name="def_wifi_on">true</bool>
+ </resources>
