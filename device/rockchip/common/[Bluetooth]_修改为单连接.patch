@@ -1,0 +1,15 @@
+Index: overlay/frameworks/base/core/res/res/values/config.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- overlay/frameworks/base/core/res/res/values/config.xml	(revision c53fef84ac9f532b52323f4b3aad750cc4e01392)
++++ overlay/frameworks/base/core/res/res/values/config.xml	(revision fc539a0cae34183727a635cd19803d60c3f6fa45)
+@@ -183,4 +183,7 @@
+ 
+     <!--蓝牙使用Pbap　mUsePbapPce-->
+     <bool name="enable_pbap_pce_profile">true</bool>
++
++    <!--默认只链接一个蓝牙audio-->
++    <integer name="config_bluetooth_max_connected_audio_devices">1</integer>
+ </resources>

@@ -1,0 +1,66 @@
+Index: src/com/android/bluetooth/hfpclient/HeadsetClientService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/com/android/bluetooth/hfpclient/HeadsetClientService.java	(date 1572955843000)
++++ src/com/android/bluetooth/hfpclient/HeadsetClientService.java	(date 1630120905000)
+@@ -63,6 +63,7 @@
+     private static final int MAX_STATE_MACHINES_POSSIBLE = 100;
+ 
+     public static final String HFP_CLIENT_STOP_TAG = "hfp_client_stop_tag";
++    public static final int MAX_HF_LINKS = 1;
+ 
+     static {
+         NativeInterface.classInitNative();
+Index: src/com/android/bluetooth/hfpclient/HeadsetClientStateMachine.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/com/android/bluetooth/hfpclient/HeadsetClientStateMachine.java	(date 1572955843000)
++++ src/com/android/bluetooth/hfpclient/HeadsetClientStateMachine.java	(date 1630120905000)
+@@ -1116,6 +1116,11 @@
+                         BluetoothProfile.STATE_CONNECTING);
+                 MetricsLogger.logProfileConnectionEvent(
+                         BluetoothMetricsProto.ProfileId.HEADSET_CLIENT);
++                //断开链接。防止多个设备同时连接
++                List<BluetoothDevice> connectedDevices = HeadsetClientService.getHeadsetClientService().getConnectedDevices();
++                if (connectedDevices.size() > HeadsetClientService.MAX_HF_LINKS){
++                    HeadsetClientService.getHeadsetClientService().disconnect(mCurrentDevice);
++                }
+             } else if (mPrevState != mAudioOn) {
+                 String prevStateName = mPrevState == null ? "null" : mPrevState.getName();
+                 Log.e(TAG, "Connected: Illegal state transition from " + prevStateName
+Index: src/com/android/bluetooth/mapclient/MapClientService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/com/android/bluetooth/mapclient/MapClientService.java	(date 1572955843000)
++++ src/com/android/bluetooth/mapclient/MapClientService.java	(date 1630120905000)
+@@ -51,7 +51,7 @@
+     static final boolean DBG = false;
+     static final boolean VDBG = false;
+ 
+-    static final int MAXIMUM_CONNECTED_DEVICES = 4;
++    static final int MAXIMUM_CONNECTED_DEVICES = 1;
+ 
+     private static final String BLUETOOTH_PERM = android.Manifest.permission.BLUETOOTH;
+ 
+Index: src/com/android/bluetooth/pbapclient/PbapClientService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/com/android/bluetooth/pbapclient/PbapClientService.java	(date 1572955843000)
++++ src/com/android/bluetooth/pbapclient/PbapClientService.java	(date 1630120905000)
+@@ -47,7 +47,7 @@
+     private static final boolean DBG = false;
+     private static final String TAG = "PbapClientService";
+     // MAXIMUM_DEVICES set to 10 to prevent an excessive number of simultaneous devices.
+-    private static final int MAXIMUM_DEVICES = 10;
++    private static final int MAXIMUM_DEVICES = 1;
+     private Map<BluetoothDevice, PbapClientStateMachine> mPbapClientStateMachineMap =
+             new ConcurrentHashMap<>();
+     private static PbapClientService sPbapClientService;
