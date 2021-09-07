@@ -1,0 +1,55 @@
+Index: overlay/frameworks/base/core/res/res/values/config.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- overlay/frameworks/base/core/res/res/values/config.xml	(revision b64418c270db379a69db046164e098aa9be003cb)
++++ overlay/frameworks/base/core/res/res/values/config.xml	(revision c53fef84ac9f532b52323f4b3aad750cc4e01392)
+@@ -181,4 +181,6 @@
+     <!--网络同步时间的地址-->
+     <string translatable="false" name="config_ntpServer">cn.pool.ntp.org</string>
+ 
++    <!--蓝牙使用Pbap　mUsePbapPce-->
++    <bool name="enable_pbap_pce_profile">true</bool>
+ </resources>
+Index: overlay/packages/apps/Bluetooth/res/values/config.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- overlay/packages/apps/Bluetooth/res/values/config.xml	(revision b64418c270db379a69db046164e098aa9be003cb)
++++ overlay/packages/apps/Bluetooth/res/values/config.xml	(revision c53fef84ac9f532b52323f4b3aad750cc4e01392)
+@@ -17,22 +17,29 @@
+  */
+ -->
+ <resources>
+-    <bool name="profile_supported_a2dp">true</bool>
+-    <bool name="profile_supported_a2dp_sink">false</bool>
++    <bool name="profile_supported_a2dp">false</bool>
++    <bool name="profile_supported_a2dp_sink">true</bool>
+     <bool name="profile_supported_hdp">false</bool>
+     <bool name="profile_supported_hs_hfp">false</bool>
+-    <bool name="profile_supported_hfpclient">false</bool>
+-    <bool name="profile_supported_hid">true</bool>
+-    <bool name="profile_supported_opp">true</bool>
+-    <bool name="profile_supported_pan">true</bool>
++    <bool name="profile_supported_hfpclient">true</bool>
++    <bool name="profile_supported_hid">false</bool>
++    <bool name="profile_supported_opp">false</bool>
++    <bool name="profile_supported_pan">false</bool>
+     <bool name="profile_supported_pbap">false</bool>
+     <bool name="profile_supported_gatt">true</bool>
+     <bool name="pbap_include_photos_in_vcard">false</bool>
+     <bool name="pbap_use_profile_for_owner_vcard">false</bool>
+     <bool name="profile_supported_map">false</bool>
+-    <bool name="profile_supported_avrcp_controller">false</bool>
++    <bool name="profile_supported_avrcp_controller">true</bool>
+     <bool name="profile_supported_sap">false</bool>
+-    <bool name="profile_supported_pbapclient">false</bool>
++    <bool name="profile_supported_pbapclient">true</bool>
+     <bool name="profile_supported_mapmce">false</bool>
+     <bool name="profile_supported_hidd">false</bool>
++
++    <bool name="enable_phone_policy">false</bool>
++    <bool name="hfp_client_connection_service_enabled">true</bool>
+ </resources>
